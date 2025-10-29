@@ -41,7 +41,7 @@ To install the PVC Autoscaler using its Helm chart, first add the repository:
 helm repo add pvc-autoscaler https://mkihr.github.io/pvc-autoscaler
 ```
 
-then you can install the chart by running:
+then you can install the chart by running (adopt values to your needs):
 
 ```console
 helm install <release-name> pvc-autoscaler/pvcautoscaler -n kube-system
