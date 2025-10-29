@@ -1,4 +1,4 @@
-module github.com/lorenzophys/pvc-autoscaler
+module github.com/mkihr/pvc-autoscaler
 
 go 1.22.0
 

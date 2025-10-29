@@ -1,6 +1,6 @@
 image:
   # image.repository -- pvc-autoscaler image repository to use.
-  repository: lorenzophys/pvc-autoscaler
+  repository: mkihr/pvc-autoscaler
 
   # image.tag -- pvc-autoscaler image tag to use.
   tag: "latest"
@@ -25,6 +25,11 @@ pvcAutoscaler:
     # pvcAutoscaler.args.reconcileTimeout -- Specify the time after which the reconciliation is considered failed.
     # Used as "--reconcile-timeout" option
     reconcileTimeout: 30s
+
+    # avoid TLS errors when using self-signed certs
+    # pvcAutoscaler.args.insecureSkipVerify -- Skip TLS certificate verification when connecting to metrics
+    # Used as "--insecure-skip-verify" option
+    insecureSkipVerify: false
 
     logger:
        # pvcAutoscaler.logger.logLevel -- Specify the log level.

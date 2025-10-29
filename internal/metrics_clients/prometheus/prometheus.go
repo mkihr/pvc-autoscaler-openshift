@@ -2,10 +2,12 @@ package prometheus
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
+	"net/http"
 	"time"
 
-	clients "github.com/lorenzophys/pvc-autoscaler/internal/metrics_clients/clients"
+	clients "github.com/mkihr/pvc-autoscaler/internal/metrics_clients/clients"
 	prometheusApi "github.com/prometheus/client_golang/api"
 	prometheusv1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
@@ -21,15 +23,25 @@ type PrometheusClient struct {
 	prometheusAPI prometheusv1.API
 }
 
-func NewPrometheusClient(url string) (clients.MetricsClient, error) {
+func NewPrometheusClient(url string, insecureSkipVerify bool) (clients.MetricsClient, error) {
+	skipVerify := false
+		// Ignore TLS errors by setting InsecureSkipVerify to true
+		// This requires using a custom RoundTripper
+		// See: https://pkg.go.dev/github.com/prometheus/client_golang/api#Config
+		// and https://pkg.go.dev/net/http#Transport
+	if insecureSkipVerify && len(url) >= 8 && url[:8] == "https://" {
+		skipVerify = true
+	}
 	client, err := prometheusApi.NewClient(prometheusApi.Config{
 		Address: url,
+		RoundTripper: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: skipVerify},
+		},
 	})
 	if err != nil {
 		return nil, err
 	}
 	v1api := prometheusv1.NewAPI(client)
-
 	return &PrometheusClient{
 		prometheusAPI: v1api,
 	}, nil

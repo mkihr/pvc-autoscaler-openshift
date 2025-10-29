@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	clients "github.com/lorenzophys/pvc-autoscaler/internal/metrics_clients/clients"
+	clients "github.com/mkihr/pvc-autoscaler/internal/metrics_clients/clients"
 	prometheusv1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	prometheusmodel "github.com/prometheus/common/model"
 	"github.com/stretchr/testify/assert"
@@ -25,7 +25,7 @@ func TestGetMetricValues(t *testing.T) {
 		defer ts.Close()
 
 		// If 404 the client should be created
-		client, err := NewPrometheusClient(ts.URL)
+		client, err := NewPrometheusClient(ts.URL, false)
 		assert.NoError(t, err)
 
 		// but the metrics obviously cannot be fetched

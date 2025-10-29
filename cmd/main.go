@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
-	clients "github.com/lorenzophys/pvc-autoscaler/internal/metrics_clients/clients"
+	clients "github.com/mkihr/pvc-autoscaler/internal/metrics_clients/clients"
 	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/kubernetes"
 )
 
 const (
-	PVCAutoscalerAnnotationPrefix           = "pvc-autoscaler.lorenzophys.io/"
+	PVCAutoscalerAnnotationPrefix           = "pvc-autoscaler.mkihr.io/"
 	PVCAutoscalerEnabledAnnotation          = PVCAutoscalerAnnotationPrefix + "enabled"
 	PVCAutoscalerThresholdAnnotation        = PVCAutoscalerAnnotationPrefix + "threshold"
 	PVCAutoscalerCeilingAnnotation          = PVCAutoscalerAnnotationPrefix + "ceiling"
@@ -42,8 +42,11 @@ func main() {
 	pollingInterval := flag.Duration("polling-interval", DefaultPollingInterval, "specify how often to check pvc stats")
 	reconcileTimeout := flag.Duration("reconcile-timeout", DefaultReconcileTimeOut, "specify the time after which the reconciliation is considered failed")
 	logLevel := flag.String("log-level", DefaultLogLevel, "specify the log level")
+	insecureSkipVerify := flag.Bool("insecure-skip-verify", false, "skip TLS certificate verification when connecting to metrics")
 
 	flag.Parse()
+
+	var BuildTag = "dev"
 
 	var loggerLevel log.Level
 	switch strings.ToLower(*logLevel) {
@@ -61,14 +64,15 @@ func main() {
 		Hooks:     make(log.LevelHooks),
 		Level:     loggerLevel,
 	}
-
+	logger.Info("pvc-autoscaler mkihr version")
+	logger.Infof("Build tag: %s", BuildTag)
 	kubeClient, err := newKubeClient()
 	if err != nil {
 		logger.Fatalf("an error occurred while creating the Kubernetes client: %s", err)
 	}
 	logger.Info("kubernetes client ready")
 
-	PVCMetricsClient, err := MetricsClientFactory(*metricsClient, *metricsClientURL)
+	PVCMetricsClient, err := MetricsClientFactory(*metricsClient, *metricsClientURL, *insecureSkipVerify)
 	if err != nil {
 		logger.Fatalf("metrics client error: %s", err)
 	}

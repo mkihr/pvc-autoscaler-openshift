@@ -1,9 +1,9 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/lorenzophys/pvc-autoscaler)](https://goreportcard.com/report/github.com/lorenzophys/pvc-autoscaler)
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/lorenzophys/pvc-autoscaler/go-lint-test-build.yaml?logo=Go)
-![GitHub release (with filter)](https://img.shields.io/github/v/release/lorenzophys/pvc-autoscaler?filter=v*&logo=Go)
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/lorenzophys/pvc-autoscaler/helm-lint-test.yaml?logo=helm&label=Helm)
-![GitHub release (with filter)](https://img.shields.io/github/v/release/lorenzophys/pvc-autoscaler?filter=pvcautoscaler-*&logo=Helm&label=Helm%20release)
-![GitHub](https://img.shields.io/github/license/lorenzophys/pvc-autoscaler)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mkihr/pvc-autoscaler)](https://goreportcard.com/report/github.com/mkihr/pvc-autoscaler)
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/mkihr/pvc-autoscaler/go-lint-test-build.yaml?logo=Go)
+![GitHub release (with filter)](https://img.shields.io/github/v/release/mkihr/pvc-autoscaler?filter=v*&logo=Go)
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/mkihr/pvc-autoscaler/helm-lint-test.yaml?logo=helm&label=Helm)
+![GitHub release (with filter)](https://img.shields.io/github/v/release/mkihr/pvc-autoscaler?filter=pvcautoscaler-*&logo=Helm&label=Helm%20release)
+![GitHub](https://img.shields.io/github/license/mkihr/pvc-autoscaler)
 
 # PVC autoscaler for Kubernetes
 
@@ -17,7 +17,7 @@ The motivation behind the PVC Autoscaler project is to provide developers with a
 
 ## How it works
 
-![pvc-autoscaler-architecture](https://github.com/lorenzophys/pvc-autoscaler/assets/63981558/5dce9455-c7e1-49df-ba1c-4f88964139a3)
+![pvc-autoscaler-architecture](https://raw.githubusercontent.com/mkihr/pvc-autoscaler/e3cfd24e99bb2ab839c9c9e1b2c6aa3aeea06cb3/docs/pvc-autoscaler-architecture.svg?token=AKGJIJ5SCICSISPVIK4MSN3I5YGHM)
 
 ## Limitations
 
@@ -38,7 +38,7 @@ PVC Autoscaler comes with a Helm chart for easy deployment in a Kubernetes clust
 To install the PVC Autoscaler using its Helm chart, first add the repository:
 
 ```console
-helm repo add pvc-autoscaler https://lorenzophys.github.io/pvc-autoscaler
+helm repo add pvc-autoscaler https://mkihr.github.io/pvc-autoscaler
 ```
 
 then you can install the chart by running:
@@ -74,10 +74,10 @@ apiVersion: v1
 metadata:
   name: my-pvc
   annotations:
-    pvc-autoscaler.lorenzophys.io/enabled: "true"
-    pvc-autoscaler.lorenzophys.io/threshold: 80%
-    pvc-autoscaler.lorenzophys.io/ceiling: 20Gi
-    pvc-autoscaler.lorenzophys.io/increase: 20%
+    pvc-autoscaler.mkihr.io/enabled: "true"
+    pvc-autoscaler.mkihr.io/threshold: 80%
+    pvc-autoscaler.mkihr.io/ceiling: 20Gi
+    pvc-autoscaler.mkihr.io/increase: 20%
 spec:
   accessModes:
     - ReadWriteOnce
@@ -93,10 +93,10 @@ spec:
 
 Then setup `metadata.annotations` this way:
 
-* to enable autoscaling set `metadata.annotations.pvc-autoscaler.lorenzophys.io/enabled` to `"true"`
-* the `metadata.annotations.pvc-autoscaler.lorenzophys.io/threshold` annotation fixes the volume usage above which the resizing will be triggered (default: 80%)
-* set how much to increase via `metadata.annotations.pvc-autoscaler.lorenzophys.io/increase` (default 20%)
-* to avoid infinite scaling you can set a maximum size for your volume via `metadata.annotations.pvc-autoscaler.lorenzophys.io/ceiling` (default: max size set by the volume provider)
+* to enable autoscaling set `metadata.annotations.pvc-autoscaler.mkihr.io/enabled` to `"true"`
+* the `metadata.annotations.pvc-autoscaler.mkihr.io/threshold` annotation fixes the volume usage above which the resizing will be triggered (default: 80%)
+* set how much to increase via `metadata.annotations.pvc-autoscaler.mkihr.io/increase` (default 20%)
+* to avoid infinite scaling you can set a maximum size for your volume via `metadata.annotations.pvc-autoscaler.mkihr.io/ceiling` (default: max size set by the volume provider)
 
 ## Contributions
 

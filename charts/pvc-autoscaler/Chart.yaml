@@ -2,10 +2,10 @@ apiVersion: v2
 name: pvcautoscaler
 description: A Helm chart for PVCAutoscaler
 maintainers:
-  - name: lorenzophys
-    email: lorenzo.maffioli@gmail.com
-    url: https://github.com/lorenzophys
+  - name: mkihr
+    email: matthias@kihr.online
+    url: https://github.com/mkihr
 
 type: application
-version: 0.3.0
-appVersion: 0.2.1
+version: 0.3.2
+appVersion: 0.3.2

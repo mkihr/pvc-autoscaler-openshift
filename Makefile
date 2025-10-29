@@ -2,7 +2,7 @@ SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
 
 PLATFORM ?= linux/amd64
-IMG ?= lorenzophys/pvc-autoscaler:dev
+IMG ?= mkihr/pvc-autoscaler:dev
 
 .PHONY: help
 help: ## Display this help.
