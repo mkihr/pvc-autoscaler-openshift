@@ -1,0 +1,32 @@
+# Example values file for OpenShift deployment
+# Usage: helm install pvc-autoscaler ./charts/pvc-autoscaler -f charts/pvc-autoscaler/values-openshift.yaml
+
+image:
+  repository: mkihr/pvc-autoscaler
+  tag: "latest"
+  pullPolicy: Always
+
+pvcAutoscaler:
+  args:
+    metricsClient: "prometheus"
+    # OpenShift Prometheus endpoint (requires authentication)
+    metricsClientURL: https://thanos-querier.openshift-monitoring.svc.cluster.local:9092
+    pollingInterval: 30s
+    reconcileTimeout: 30s
+    # Enable TLS skip verify if using self-signed certificates
+    insecureSkipVerify: true
+    # Path to ServiceAccount token for Prometheus authentication
+    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+
+    logger:
+      logLevel: "INFO"
+
+    extraLabels: {}
+
+  resources:
+    requestCPU: "10m"
+    requestMemory: "20Mi"
+
+# Enable OpenShift-specific configurations
+openshift:
+  enabled: true

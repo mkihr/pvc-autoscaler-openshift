@@ -5,12 +5,16 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
+	"github.com/mkihr/pvc-autoscaler/internal/logger"
 	clients "github.com/mkihr/pvc-autoscaler/internal/metrics_clients/clients"
 	prometheusv1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	prometheusmodel "github.com/prometheus/common/model"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"k8s.io/apimachinery/pkg/types"
@@ -19,13 +23,18 @@ import (
 type MockPrometheusAPI struct {
 }
 
+func init() {
+	// Initialize logger for tests to prevent nil pointer dereference
+	logger.Init(log.InfoLevel)
+}
+
 func TestGetMetricValues(t *testing.T) {
 	t.Run("server not found", func(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(http.NotFound))
 		defer ts.Close()
 
 		// If 404 the client should be created
-		client, err := NewPrometheusClient(ts.URL, false)
+		client, err := NewPrometheusClient(ts.URL, false, "")
 		assert.NoError(t, err)
 
 		// but the metrics obviously cannot be fetched
@@ -143,4 +152,64 @@ func TestFetchPVCsMetrics(t *testing.T) {
 		assert.Equal(t, expectedResult, result)
 	})
 
+}
+
+func TestBearerTokenAuthentication(t *testing.T) {
+	t.Run("with bearer token", func(t *testing.T) {
+		// Create a test server that checks for the Authorization header
+		receivedToken := ""
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			receivedToken = r.Header.Get("Authorization")
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer ts.Close()
+
+		// Create a temporary token file
+		tmpDir := t.TempDir()
+		tokenFile := filepath.Join(tmpDir, "token")
+		expectedToken := "test-bearer-token-12345"
+		err := os.WriteFile(tokenFile, []byte(expectedToken), 0600)
+		assert.NoError(t, err)
+
+		// Create client with bearer token
+		client, err := NewPrometheusClient(ts.URL, false, tokenFile)
+		assert.NoError(t, err)
+		assert.NotNil(t, client)
+
+		// Make a request (it will fail because the test server doesn't return valid Prometheus data,
+		// but we can check if the token was sent)
+		_, _ = client.FetchPVCsMetrics(context.TODO(), time.Time{})
+
+		// Verify the Authorization header was set correctly
+		assert.Equal(t, "Bearer "+expectedToken, receivedToken)
+	})
+
+	t.Run("without bearer token", func(t *testing.T) {
+		// Create a test server that checks for the Authorization header
+		receivedToken := ""
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			receivedToken = r.Header.Get("Authorization")
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer ts.Close()
+
+		// Create client without bearer token
+		client, err := NewPrometheusClient(ts.URL, false, "")
+		assert.NoError(t, err)
+		assert.NotNil(t, client)
+
+		// Make a request
+		_, _ = client.FetchPVCsMetrics(context.TODO(), time.Time{})
+
+		// Verify no Authorization header was set
+		assert.Equal(t, "", receivedToken)
+	})
+
+	t.Run("invalid token file", func(t *testing.T) {
+		// Try to create a client with a non-existent token file
+		client, err := NewPrometheusClient("http://localhost:9090", false, "/non/existent/token/file")
+		assert.Error(t, err)
+		assert.Nil(t, client)
+		assert.Contains(t, err.Error(), "failed to read bearer token file")
+	})
 }

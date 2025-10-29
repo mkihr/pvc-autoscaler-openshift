@@ -5,8 +5,10 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/mkihr/pvc-autoscaler/internal/logger"
 	clients "github.com/mkihr/pvc-autoscaler/internal/metrics_clients/clients"
 	prometheusApi "github.com/prometheus/client_golang/api"
 	prometheusv1 "github.com/prometheus/client_golang/api/prometheus/v1"
@@ -23,20 +25,52 @@ type PrometheusClient struct {
 	prometheusAPI prometheusv1.API
 }
 
-func NewPrometheusClient(url string, insecureSkipVerify bool) (clients.MetricsClient, error) {
+// bearerTokenRoundTripper wraps a RoundTripper to add Bearer token authentication
+type bearerTokenRoundTripper struct {
+	bearerToken string
+	rt          http.RoundTripper
+}
+
+func (b *bearerTokenRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	if b.bearerToken != "" {
+		req.Header.Set("Authorization", "Bearer "+b.bearerToken)
+	}
+	return b.rt.RoundTrip(req)
+}
+
+func NewPrometheusClient(url string, insecureSkipVerify bool, bearerTokenFile string) (clients.MetricsClient, error) {
 	skipVerify := false
-		// Ignore TLS errors by setting InsecureSkipVerify to true
-		// This requires using a custom RoundTripper
-		// See: https://pkg.go.dev/github.com/prometheus/client_golang/api#Config
-		// and https://pkg.go.dev/net/http#Transport
+	// Ignore TLS errors by setting InsecureSkipVerify to true
+	// This requires using a custom RoundTripper
+	// See: https://pkg.go.dev/github.com/prometheus/client_golang/api#Config
+	// and https://pkg.go.dev/net/http#Transport
 	if insecureSkipVerify && len(url) >= 8 && url[:8] == "https://" {
 		skipVerify = true
+		logger.Logger.Warn("InsecureSkipVerify is enabled. TLS certificate verification will be skipped.")
 	}
+
+	// Create base transport with TLS configuration
+	transport := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: skipVerify},
+	}
+
+	// Wrap with bearer token authentication if token file is provided
+	var roundTripper http.RoundTripper = transport
+	if bearerTokenFile != "" {
+		token, err := os.ReadFile(bearerTokenFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read bearer token file %s: %w", bearerTokenFile, err)
+		}
+		logger.Logger.Info("Using bearer token authentication for Prometheus")
+		roundTripper = &bearerTokenRoundTripper{
+			bearerToken: string(token),
+			rt:          transport,
+		}
+	}
+
 	client, err := prometheusApi.NewClient(prometheusApi.Config{
-		Address: url,
-		RoundTripper: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: skipVerify},
-		},
+		Address:      url,
+		RoundTripper: roundTripper,
 	})
 	if err != nil {
 		return nil, err
@@ -70,7 +104,6 @@ func (c *PrometheusClient) FetchPVCsMetrics(ctx context.Context, when time.Time)
 
 		volumeStats[key] = pvcMetrics
 	}
-
 	return volumeStats, nil
 }
 

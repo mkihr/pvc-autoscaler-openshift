@@ -29,6 +29,12 @@ spec:
             - --polling-interval={{ .Values.pvcAutoscaler.args.pollingInterval }}
             - --reconcile-timeout={{ .Values.pvcAutoscaler.args.reconcileTimeout }}
             - --log-level={{ .Values.pvcAutoscaler.args.logger.logLevel }}
+            {{- if .Values.pvcAutoscaler.args.insecureSkipVerify }}
+            - --insecure-skip-verify
+            {{- end }}
+            {{- if .Values.pvcAutoscaler.args.bearerTokenFile }}
+            - --bearer-token-file={{ .Values.pvcAutoscaler.args.bearerTokenFile }}
+            {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           resources:
             requests:

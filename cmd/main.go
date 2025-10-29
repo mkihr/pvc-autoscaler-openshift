@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"flag"
-	"os"
 	"strings"
 	"time"
 
+	"github.com/mkihr/pvc-autoscaler/internal/logger"
 	clients "github.com/mkihr/pvc-autoscaler/internal/metrics_clients/clients"
 	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/kubernetes"
@@ -43,6 +43,7 @@ func main() {
 	reconcileTimeout := flag.Duration("reconcile-timeout", DefaultReconcileTimeOut, "specify the time after which the reconciliation is considered failed")
 	logLevel := flag.String("log-level", DefaultLogLevel, "specify the log level")
 	insecureSkipVerify := flag.Bool("insecure-skip-verify", false, "skip TLS certificate verification when connecting to metrics")
+	bearerTokenFile := flag.String("bearer-token-file", "", "path to bearer token file for Prometheus authentication (e.g., /var/run/secrets/kubernetes.io/serviceaccount/token)")
 
 	flag.Parse()
 
@@ -58,35 +59,33 @@ func main() {
 		loggerLevel = log.InfoLevel
 	}
 
-	logger := &log.Logger{
-		Out:       os.Stderr,
-		Formatter: new(log.JSONFormatter),
-		Hooks:     make(log.LevelHooks),
-		Level:     loggerLevel,
+	logger.Init(loggerLevel)
+	logger.Logger.Info("pvc-autoscaler mkihr version")
+	logger.Logger.Infof("Build tag: %s", BuildTag)
+	if *insecureSkipVerify {
+		logger.Logger.Warn("InsecureSkipVerify is enabled. TLS certificate verification will be skipped.")
 	}
-	logger.Info("pvc-autoscaler mkihr version")
-	logger.Infof("Build tag: %s", BuildTag)
 	kubeClient, err := newKubeClient()
 	if err != nil {
-		logger.Fatalf("an error occurred while creating the Kubernetes client: %s", err)
+		logger.Logger.Fatalf("an error occurred while creating the Kubernetes client: %s", err)
 	}
-	logger.Info("kubernetes client ready")
+	logger.Logger.Info("kubernetes client ready")
 
-	PVCMetricsClient, err := MetricsClientFactory(*metricsClient, *metricsClientURL, *insecureSkipVerify)
+	PVCMetricsClient, err := MetricsClientFactory(*metricsClient, *metricsClientURL, *insecureSkipVerify, *bearerTokenFile)
 	if err != nil {
-		logger.Fatalf("metrics client error: %s", err)
+		logger.Logger.Fatalf("metrics client error: %s", err)
 	}
 
-	logger.Infof("metrics client (%s) ready at address %s", *metricsClient, *metricsClientURL)
+	logger.Logger.Infof("metrics client (%s) ready at address %s", *metricsClient, *metricsClientURL)
 
 	pvcAutoscaler := &PVCAutoscaler{
 		kubeClient:      kubeClient,
 		metricsClient:   PVCMetricsClient,
-		logger:          logger,
+		logger:          logger.Logger,
 		pollingInterval: *pollingInterval,
 	}
 
-	logger.Info("pvc-autoscaler ready")
+	logger.Logger.Info("pvc-autoscaler ready")
 
 	ticker := time.NewTicker(pvcAutoscaler.pollingInterval)
 	defer ticker.Stop()

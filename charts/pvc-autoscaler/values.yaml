@@ -16,7 +16,7 @@ pvcAutoscaler:
 
     # pvcAutoscaler.args.metricsClientURL -- Specify metrics client URL to query volume stats.
     # Used as "--metrics-client-url" option
-    metricsClientURL: http://prometheus-server.monitoring.svc.cluster.local
+    metricsClientURL: http://prometheus-operated.prom.svc.cluster.local:9090
 
     # pvcAutoscaler.args.pollingInterval -- Specify how often to check pvc stats.
     # Used as "--polling-interval" option
@@ -30,6 +30,11 @@ pvcAutoscaler:
     # pvcAutoscaler.args.insecureSkipVerify -- Skip TLS certificate verification when connecting to metrics
     # Used as "--insecure-skip-verify" option
     insecureSkipVerify: false
+
+    # pvcAutoscaler.args.bearerTokenFile -- Path to bearer token file for Prometheus authentication
+    # For OpenShift, use the ServiceAccount token: /var/run/secrets/kubernetes.io/serviceaccount/token
+    # Used as "--bearer-token-file" option
+    bearerTokenFile: ""
 
     logger:
        # pvcAutoscaler.logger.logLevel -- Specify the log level.
@@ -45,3 +50,8 @@ pvcAutoscaler:
 
     # pvcAutoscaler.resources.requestMemory -- Request memory resource unit in terms of Mi
     requestMemory: "20Mi"
+
+# OpenShift specific configuration
+openshift:
+  # openshift.enabled -- Enable OpenShift-specific configurations (e.g., Prometheus RBAC)
+  enabled: false

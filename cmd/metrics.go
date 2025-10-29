@@ -7,10 +7,10 @@ import (
 	"github.com/mkihr/pvc-autoscaler/internal/metrics_clients/prometheus"
 )
 
-func MetricsClientFactory(clientName, clientUrl string, insecureSkipVerify bool) (clients.MetricsClient, error) {
+func MetricsClientFactory(clientName, clientUrl string, insecureSkipVerify bool, bearerTokenFile string) (clients.MetricsClient, error) {
 	switch clientName {
     case "prometheus":
-        prometheusClient, err := prometheus.NewPrometheusClient(clientUrl, insecureSkipVerify)
+        prometheusClient, err := prometheus.NewPrometheusClient(clientUrl, insecureSkipVerify, bearerTokenFile)
         if err != nil {
             return nil, err
         }
