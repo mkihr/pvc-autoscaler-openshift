@@ -22,10 +22,13 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Install Helm
-        run: |
-          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-          chmod 700 get_helm.sh
-          ./get_helm.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: azure/setup-helm@v4
+        with:
+          version: 'v3.18.4'
+        timeout-minutes: 10
+
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
