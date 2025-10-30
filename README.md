@@ -1,5 +1,5 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/mkihr/pvc-autoscaler)](https://goreportcard.com/report/github.com/mkihr/pvc-autoscaler)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mkihr/pvc-autoscaler/go.yaml?logo=go)](https://github.com/mkihr/pvc-autoscaler/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mkihr/pvc-autoscaler/go.yml?logo=go)](https://github.com/mkihr/pvc-autoscaler/actions)
 [![GitHub release](https://img.shields.io/github/v/release/mkihr/pvc-autoscaler?logo=github)](https://github.com/mkihr/pvc-autoscaler/releases)
 [![Helm Workflow Status](https://img.shields.io/github/actions/workflow/status/mkihr/pvc-autoscaler/helm-release.yaml?logo=helm&label=Helm)](https://github.com/mkihr/pvc-autoscaler/actions)
 ![GitHub release (with filter)](https://img.shields.io/github/v/release/mkihr/pvc-autoscaler?filter=pvcautoscaler-*&logo=Helm&label=Helm%20release)
