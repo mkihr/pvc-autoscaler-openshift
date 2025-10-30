@@ -1,7 +1,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/mkihr/pvc-autoscaler)](https://goreportcard.com/report/github.com/mkihr/pvc-autoscaler)
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/mkihr/pvc-autoscaler/go-lint-test-build.yaml?logo=Go)
-![GitHub release (with filter)](https://img.shields.io/github/v/release/mkihr/pvc-autoscaler?filter=v*&logo=Go)
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/mkihr/pvc-autoscaler/helm-lint-test.yaml?logo=helm&label=Helm)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mkihr/pvc-autoscaler/go.yml?logo=go)](https://github.com/mkihr/pvc-autoscaler/actions)
+[![GitHub release](https://img.shields.io/github/v/release/mkihr/pvc-autoscaler?logo=github)](https://github.com/mkihr/pvc-autoscaler/releases)
+[![Helm Workflow Status](https://img.shields.io/github/actions/workflow/status/mkihr/pvc-autoscaler/helm-release.yaml?logo=helm&label=Helm)](https://github.com/mkihr/pvc-autoscaler/actions)
 ![GitHub release (with filter)](https://img.shields.io/github/v/release/mkihr/pvc-autoscaler?filter=pvcautoscaler-*&logo=Helm&label=Helm%20release)
 ![GitHub](https://img.shields.io/github/license/mkihr/pvc-autoscaler)
 
@@ -17,7 +17,7 @@ The motivation behind the PVC Autoscaler project is to provide developers with a
 
 ## How it works
 
-![pvc-autoscaler-architecture](https://raw.githubusercontent.com/mkihr/pvc-autoscaler/e3cfd24e99bb2ab839c9c9e1b2c6aa3aeea06cb3/docs/pvc-autoscaler-architecture.svg?token=AKGJIJ5SCICSISPVIK4MSN3I5YGHM)
+![pvc-autoscaler-architecture](https://raw.githubusercontent.com/mkihr/pvc-autoscaler/main/docs/pvc-autoscaler-architecture.svg)
 
 ## Limitations
 
