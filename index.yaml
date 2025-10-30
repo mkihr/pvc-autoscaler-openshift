@@ -1,3 +1,18 @@
 apiVersion: v1
-entries: {}
-generated: "2025-10-30T00:00:00Z"
+entries:
+  pvcautoscaler:
+  - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2025-10-30T18:29:18.861382853Z"
+    description: A Helm chart for PVCAutoscaler
+    digest: 999c5dfa27a4af4d549cddd918acf6b2f7430f2e7bd0b82ce1d772c64ed0fae5
+    maintainers:
+    - email: matthias@kihr.online
+      name: mkihr
+      url: https://github.com/mkihr
+    name: pvcautoscaler
+    type: application
+    urls:
+    - https://github.com/mkihr/pvc-autoscaler/releases/download/pvcautoscaler-1.0.3/pvcautoscaler-1.0.3.tgz
+    version: 1.0.3
+generated: "2025-10-30T18:29:18.861390206Z"
