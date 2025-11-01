@@ -1,6 +1,6 @@
 image:
   # image.repository -- pvc-autoscaler image repository to use.
-  repository: mkihr/pvc-autoscaler
+  repository: mkihr1/pvc-autoscaler
 
   # image.tag -- pvc-autoscaler image tag to use.
   tag: "latest"

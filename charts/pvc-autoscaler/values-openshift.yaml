@@ -2,7 +2,7 @@
 # Usage: helm install pvc-autoscaler ./charts/pvc-autoscaler -f charts/pvc-autoscaler/values-openshift.yaml
 
 image:
-  repository: mkihr/pvc-autoscaler
+  repository: mkihr1/pvc-autoscaler
   tag: "latest"
   pullPolicy: Always
 
