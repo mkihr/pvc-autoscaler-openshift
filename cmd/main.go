@@ -30,10 +30,11 @@ const (
 )
 
 type PVCAutoscaler struct {
-	kubeClient      kubernetes.Interface
-	metricsClient   clients.MetricsClient
-	logger          *log.Logger
-	pollingInterval time.Duration
+	kubeClient           kubernetes.Interface
+	metricsClient        clients.MetricsClient
+	logger               *log.Logger
+	pollingInterval      time.Duration
+	pvcsWithMetricsError map[string]bool
 }
 
 func main() {
@@ -51,9 +52,9 @@ func main() {
 
 	var loggerLevel log.Level
 	switch strings.ToLower(*logLevel) {
-	case "INFO":
+	case "info":
 		loggerLevel = log.InfoLevel
-	case "DEBUG":
+	case "debug":
 		loggerLevel = log.DebugLevel
 	default:
 		loggerLevel = log.InfoLevel
@@ -79,10 +80,11 @@ func main() {
 	logger.Logger.Infof("metrics client (%s) ready at address %s", *metricsClient, *metricsClientURL)
 
 	pvcAutoscaler := &PVCAutoscaler{
-		kubeClient:      kubeClient,
-		metricsClient:   PVCMetricsClient,
-		logger:          logger.Logger,
-		pollingInterval: *pollingInterval,
+		kubeClient:           kubeClient,
+		metricsClient:        PVCMetricsClient,
+		logger:               logger.Logger,
+		pollingInterval:      *pollingInterval,
+		pvcsWithMetricsError: make(map[string]bool),
 	}
 
 	logger.Logger.Info("pvc-autoscaler ready")

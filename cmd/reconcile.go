@@ -58,7 +58,13 @@ func (a *PVCAutoscaler) reconcile(ctx context.Context) error {
 		}
 		if _, ok := pvcsMetrics[namespacedName]; !ok {
 			a.logger.Errorf("could not fetch the metrics for %s", pvcId)
+			a.pvcsWithMetricsError[pvcId] = true
 			continue
+		}
+		// Check if this PVC previously had metrics errors and is now recovered
+		if a.pvcsWithMetricsError[pvcId] {
+			a.logger.Infof("metrics for %s are now available again", pvcId)
+			delete(a.pvcsWithMetricsError, pvcId)
 		}
 		a.logger.Debugf("metrics for %s received", pvcId)
 
